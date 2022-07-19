@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 import { Button, useTheme } from "react-daisyui"
+import { Provider, useSelector } from 'react-redux'
 
 const themeBoardColor = (theme) => {
     return theme === "dark" ? 'border-slate-500 outline-slate-500' : 'border-slate-300 outline-slate-300'
@@ -18,19 +20,21 @@ const Cell = (props) => {
     const color = isBid ? "text-red-500" : "text-green-500"
     const bgColor = ""//isBid ? "bg-red-100": "bg-green-100"
     const { theme } = useTheme()
-    const boardColor = themeBoardColor(theme)
+    const borderColor = themeBoardColor(theme)
     // const boardDashed = isPos ? "hover:outline hover:outline-dashed mt-px ml-px" : "outline mt-px ml-px"
-    const board = `border ${isRight? "": "border-r-0"} ${isBottom? "": "border-b-0"}`
-    const boardStyle = isPos ? "hover:border hover:border-dashed" : board
+    const border = `border ${isRight ? "" : "border-r-0"} ${isBottom ? "" : "border-b-0"}`
+    const borderStyle = isPos ? `${border} hover:border hover:border-dashed` : border
     const hover = isPrice ? "hover:cursor-pointer" : ""
-    // "border-r-0 border-b-0"
+    const [pos, setPos] = useState(0)
+    // 
     return (
-        <span className={`table-cell w-16 h-8 text-center ${boardStyle} ${boardColor} ${hover} ${bgColor} ${color}`}>
-            <span className={`w-full h-full align-middle items-center text-xs text-center justify-center`}>
-                {data}
-            </span>
+        <div className={`table-cell w-16 h-6 text-center ${borderStyle} ${borderColor} ${hover} ${bgColor} ${color} w-full h-full cursor-default select-none items-center align-middle text-xs text-center justify-center`}
+            onClick={() => setPos((count) => count + 1)}
+        >
+            {isPos ? ((pos === 0) ? null : pos) : (data === 0) ? null : data}
+            {/*<span className={``}> </span>*/}
             {/* <p className={`text-xs text-center`}>{data}</p> */}
-        </span>
+        </div>
     )
 }
 
@@ -54,8 +58,8 @@ const ThunderRow = (props) => {
     const {
         long_pos, price, volume, isBid, short_pos, isBottom
     } = props
-    const bid_volume = isBid ? volume : null
-    const ask_volume = isBid ? null : volume
+    const bid_volume = isBid ? volume : 0
+    const ask_volume = isBid ? 0 : volume
     const { theme } = useTheme()
     const boardColor = ""//themeBoardColor(theme)
     // border-r 
@@ -64,8 +68,8 @@ const ThunderRow = (props) => {
             <Cell data={long_pos} isBid={true} isPos={true} isBottom={isBottom}></Cell>
             <Cell data={bid_volume} isBid={true} isBottom={isBottom}></Cell>
             <Cell data={price} isBid={isBid} isPrice={true} isBottom={isBottom}></Cell>
-            <Cell data={ask_volume} isBid={false} isRight={true} isBottom={isBottom}></Cell>
-            <Cell data={short_pos} isBid={false} isPos={true} isBottom={isBottom}></Cell>
+            <Cell data={ask_volume} isBid={false} isBottom={isBottom}></Cell>
+            <Cell data={short_pos} isBid={false} isPos={true} isRight={true} isBottom={isBottom}></Cell>
         </div>
     )
 }
@@ -80,25 +84,29 @@ ThunderRow.propTypes = {
 }
 
 ThunderRow.defaultProps = {
+    long_pos: 0,
     isBottom: false,
+    short_pos: 0,
 }
 
 const ThunderTable = () => {
     const { theme } = useTheme()
+    const prices = useSelector(state => state)
+    console.log(prices)
     const boardColor = ""//themeBoardColor(theme)
     // border-b
     return (
-        <div className={`table${boardColor}`}>
-            <ThunderRow long_pos={null} price={100.5} volume={110} isBid={false} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={100.4} volume={95} isBid={false} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={100.3} volume={38} isBid={false} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={100.2} volume={20} isBid={false} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={100.1} volume={3} isBid={false} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={100.0} volume={10} isBid={true} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={99.9} volume={12} isBid={true} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={99.8} volume={28} isBid={true} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={99.7} volume={80} isBid={true} short_pos={null}></ThunderRow>
-            <ThunderRow long_pos={null} price={99.6} volume={150} isBid={true} short_pos={null} isBottom={true}></ThunderRow>
+        <div className={`table${boardColor} p-1`}>
+            <ThunderRow price={100.5} volume={110} isBid={false} ></ThunderRow>
+            <ThunderRow price={100.4} volume={95} isBid={false} ></ThunderRow>
+            <ThunderRow price={100.3} volume={38} isBid={false} ></ThunderRow>
+            <ThunderRow price={100.2} volume={20} isBid={false} ></ThunderRow>
+            <ThunderRow price={100.1} volume={3} isBid={false} ></ThunderRow>
+            <ThunderRow price={100.0} volume={10} isBid={true} ></ThunderRow>
+            <ThunderRow price={99.9} volume={12} isBid={true} ></ThunderRow>
+            <ThunderRow price={99.8} volume={28} isBid={true} ></ThunderRow>
+            <ThunderRow price={99.7} volume={80} isBid={true} ></ThunderRow>
+            <ThunderRow price={99.6} volume={150} isBid={true} isBottom={true}></ThunderRow>
         </div>
 
     )
