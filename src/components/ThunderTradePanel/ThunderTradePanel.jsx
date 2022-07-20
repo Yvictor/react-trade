@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, useTheme } from "react-daisyui"
 import { useDispatch, useSelector } from 'react-redux'
 import { init_price, update_price } from '../../redux/reducers'
@@ -93,24 +93,33 @@ ThunderRow.defaultProps = {
 const ThunderTable = () => {
     const { theme } = useTheme()
     const dispatch = useDispatch()
-    dispatch(init_price({price: 100, limit_down: 99, limit_up: 110, price_step_type: "tws"}, "INIT"))
+    useEffect(
+        () => {
+            dispatch(init_price({ price: 100, limit_down: 99, limit_up: 110, price_step_type: "tws" , 
+            ask: {100: 10, 100.5: 30, 101: 33, 101.5: 45, 102: 31},
+            bid: {99.9: 5, 99.8: 45, 99.7: 17, 99.6: 23, 99.5: 11},
+        }, "INIT"))
+        }, []
+    )
     const display_num = useSelector((state) => state.quote.display_num)
     const prices = useSelector((state) => state.quote.prices)
+    const parr = useSelector((state) => state.quote.parr)
+    const price_from_idx = useSelector((state) => state.quote.price_from_idx)
+    const ask = useSelector((state) => state.quote.ask)
+    const bid = useSelector((state) => state.quote.bid)
+    const price = useSelector((state) => state.quote.price)
     console.log(prices)
     const boardColor = ""//themeBoardColor(theme)
     // border-b
+    const rows = []
+    for (var i = 1; i <= display_num; i++) {
+        const p = parr[price_from_idx-i]
+        const v = (p in ask)? ask[p] : (p in bid) ? bid[p]: 0
+        rows.push(<ThunderRow key={i} price={p} volume={v} isBid={p < price} isBottom={i === display_num}></ThunderRow>)
+    }
     return (
         <div className={`table${boardColor} p-1`}>
-            <ThunderRow price={100.5} volume={110} isBid={false} ></ThunderRow>
-            <ThunderRow price={100.4} volume={95} isBid={false} ></ThunderRow>
-            <ThunderRow price={100.3} volume={38} isBid={false} ></ThunderRow>
-            <ThunderRow price={100.2} volume={20} isBid={false} ></ThunderRow>
-            <ThunderRow price={100.1} volume={3} isBid={false} ></ThunderRow>
-            <ThunderRow price={100.0} volume={10} isBid={true} ></ThunderRow>
-            <ThunderRow price={99.9} volume={12} isBid={true} ></ThunderRow>
-            <ThunderRow price={99.8} volume={28} isBid={true} ></ThunderRow>
-            <ThunderRow price={99.7} volume={80} isBid={true} ></ThunderRow>
-            <ThunderRow price={99.6} volume={150} isBid={true} isBottom={true}></ThunderRow>
+            {rows}
         </div>
 
     )

@@ -26,9 +26,11 @@ export const quoteSlice = createSlice({
     prices: {},
     ask: {},
     bid: {},
+    parr: [],
     price: 0,
     volume: 0,
-    display_num: 10,
+    display_num: 15,
+    price_from_idx: 0,
     price_step_type: "norm", //"tws"
   },
   reducers: {
@@ -53,13 +55,17 @@ export const quoteSlice = createSlice({
     },
     init_price: (state, action) => {
       state.price = action.payload.price
-      let parr = _.range(action.payload.limit_down, action.payload.limit_up, 1)
+      state.ask = action.payload.ask
+      state.bid = action.payload.bid
+      state.parr = _.range(action.payload.limit_down, action.payload.limit_up, 1)
       if (action.payload.price_step_type === "tws") {
 
-        parr = prices_arr.slice(prices_arr.indexOf(action.payload.limit_down), prices_arr.indexOf(action.payload.limit_up))
+        state.parr = prices_arr.slice(prices_arr.indexOf(action.payload.limit_down), prices_arr.indexOf(action.payload.limit_up))
 
       }
-      parr.forEach(
+      state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num/2)
+      // state.ask = {}
+      state.parr.forEach(
         (p) => {
           state.prices[p] = {
             askv: 0,
