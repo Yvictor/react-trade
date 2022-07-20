@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { Button, useTheme } from "react-daisyui"
-import { Provider, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { init_price, update_price } from '../../redux/reducers'
 
 const themeBoardColor = (theme) => {
     return theme === "dark" ? 'border-slate-500 outline-slate-500' : 'border-slate-300 outline-slate-300'
@@ -91,7 +92,10 @@ ThunderRow.defaultProps = {
 
 const ThunderTable = () => {
     const { theme } = useTheme()
-    const prices = useSelector(state => state)
+    const dispatch = useDispatch()
+    dispatch(init_price({price: 100, limit_down: 99, limit_up: 110, price_step_type: "tws"}, "INIT"))
+    const display_num = useSelector((state) => state.quote.display_num)
+    const prices = useSelector((state) => state.quote.prices)
     console.log(prices)
     const boardColor = ""//themeBoardColor(theme)
     // border-b

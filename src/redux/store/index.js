@@ -1,8 +1,8 @@
-// import { configureStore } from "@reduxjs/toolkit";
-import { createStore } from "redux";
-import quoteReducer from "../reducers/quote";
-// import thunderTradeAppReducer from "../reducers";
+import { configureStore } from "@reduxjs/toolkit";
+// import { createStore } from "redux";
+// import quoteReducer from "../reducers/quote";
+import quoteReducer from "../reducers";
 
-const store = createStore(quoteReducer);
+const store = configureStore({ reducer: { quote: quoteReducer } });
 
 export default store;
