@@ -50,6 +50,14 @@ export const quoteSlice = createSlice({
       state.ask = action.payload.ask
       state.bid = action.payload.bid
     },
+    update_position: (state, action) => {
+      if (action.payload.side === "BUY"){
+        state.prices[action.payload.price].buyv += 1
+      }
+      if (action.payload.side == "SELL") {
+        state.prices[action.payload.price].sellv += 1
+      }
+    },
     update_display_num: (state, action) => {
       state.display_num = action.payload
     },
@@ -70,6 +78,8 @@ export const quoteSlice = createSlice({
           state.prices[p] = {
             askv: 0,
             bidv: 0,
+            buyv: 0,
+            sellv: 0,
           }
         }
       )
@@ -80,6 +90,6 @@ export const quoteSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { update_price, init_price, update_display_num } = quoteSlice.actions
+export const { update_price, update_position, init_price, update_display_num } = quoteSlice.actions
 
 export default quoteSlice.reducer
