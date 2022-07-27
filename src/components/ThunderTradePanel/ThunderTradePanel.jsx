@@ -74,7 +74,7 @@ const ThunderRow = (props) => {
     const prices = useSelector((state) => state.quote.prices)
     // border-r 
     return (
-        <div className={`table-row ${boardColor}`}>
+        <div className={`table-row ${boardColor} snap-center`}>
             <Cell data={long_pos} price={price} isBid={true} isPos={true} isBottom={isBottom} onClick={onClick}></Cell>
             <Cell data={bid_volume} price={price} isBid={true} isBottom={isBottom} onClick={onClick}></Cell>
             <Cell data={price} price={price} isBid={isBid} isPrice={true} isBottom={isBottom} onClick={onClick}></Cell>
@@ -141,10 +141,13 @@ const ThunderTable = () => {
         ></ThunderRow>)
     }
     return (
-        <div className={`table${boardColor} p-1`}>
-            {rows}
+        <div className='h-[313px] snap-y overflow-y-scroll' onScroll={(e) => {
+            console.log(e)
+            }}>
+            <div className={`table ${boardColor} sticky -top-6`}>
+                {rows}
+            </div>
         </div>
-
     )
 }
 
