@@ -63,11 +63,11 @@ export const quoteSlice = createSlice({
     },
     update_price_from_idx: (state, action) => {
       if (action.payload.direction === "up") {
-        if (state.price_from_idx <= state.parr.length)
+        if (state.price_from_idx < state.parr.length)
           state.price_from_idx += 1
       }
       if (action.payload.direction === "down") {
-        if (state.price_from_idx >= state.display_num) {
+        if (state.price_from_idx > state.display_num) {
           state.price_from_idx -= 1
         }
       }

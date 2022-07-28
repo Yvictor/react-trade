@@ -151,22 +151,21 @@ const ThunderTable = () => {
     }
 
     return (
-        <div className='h-[313px] snap-y overflow-y-scroll overscroll-none -right-[17px]' onScroll={(e) => {
+        <div className={`table ${boardColor} sticky top-0 pr-3`} onWheel={(e) => {
             // console.log(e.currentTarget.scrollTop)
-            if (e.currentTarget.scrollTop >= 30) {
+            // console.log(e.deltaY)
+            if (e.deltaY > 2) {
                 dispatch(update_price_from_idx({ direction: "down" }, "UPDATE_IDX_UP"))
-                console.log("scrollup")
-            } else if (e.currentTarget.scrollTop <= 14) {
+                // console.log("scrollup")
+            } else if (e.deltaY < -2) {
                 dispatch(update_price_from_idx({ direction: "up" }, "UPDATE_IDX_DOWN"))
-                console.log("scrolldown")
+                // console.log("scrolldown")
             }
             // e.target.scrollTop = 24
-            e.target.scrollTo(0, 24)
+            // e.target.scrollTo(0, 24)
             // console.log(e)
         }}>
-            <div className={`table ${boardColor} sticky top-0 pr-3`}>
-                {rows}
-            </div>
+            {rows}
         </div>
     )
 }
