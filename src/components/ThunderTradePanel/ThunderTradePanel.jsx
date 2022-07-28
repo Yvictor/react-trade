@@ -2,11 +2,19 @@ import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import { Button, useTheme } from "react-daisyui"
 import { useDispatch, useSelector } from 'react-redux'
-import { init_price, update_price, update_position } from '../../redux/reducers'
+import { init_price, update_price, update_price_from_idx, update_position } from '../../redux/reducers'
+import { classnames } from 'tailwindcss-classnames';
 
 const themeBoardColor = (theme) => {
     return theme === "dark" ? 'border-slate-500 outline-slate-500' : 'border-slate-300 outline-slate-300'
 }
+
+const cellbase = classnames(
+    "table-cell", "w-16",
+    "h-6", "text-center", "w-full", "h-full",
+    "cursor-default", "select-none", "items-center",
+    "align-middle", "text-xs", "justify-center"
+)
 
 const Cell = (props) => {
     const {
@@ -32,8 +40,9 @@ const Cell = (props) => {
     const prices = useSelector((state) => state.quote.prices)
     const price_data = prices[price]
     const pos = price_data === undefined ? 0 : price_data[isBid ? "buyv" : "sellv"]
+    const cellstyle = classnames(cellbase, borderStyle, borderColor, hover, bgColor, color)
     return (
-        <div className={`table-cell w-16 h-6 text-center ${borderStyle} ${borderColor} ${hover} ${bgColor} ${color} w-full h-full cursor-default select-none items-center align-middle text-xs text-center justify-center`}
+        <div className={cellstyle}
             onClick={(e) => {
                 dispatch(update_position({ price: price, side: isBid ? "BUY" : "SELL" }))
             }}
@@ -106,7 +115,7 @@ const ThunderTable = () => {
     useEffect(
         () => {
             dispatch(init_price({
-                price: 100, limit_down: 99, limit_up: 110, price_step_type: "tws",
+                price: 100, limit_down: 94.6, limit_up: 113, price_step_type: "tws",
                 ask: { 100: 10, 100.5: 30, 101: 33, 101.5: 45, 102: 31 },
                 bid: { 99.9: 5, 99.8: 45, 99.7: 17, 99.6: 23, 99.5: 11 },
             }, "INIT"))
@@ -140,11 +149,22 @@ const ThunderTable = () => {
         // }}
         ></ThunderRow>)
     }
+
     return (
-        <div className='h-[313px] snap-y overflow-y-scroll' onScroll={(e) => {
-            console.log(e)
-            }}>
-            <div className={`table ${boardColor} sticky -top-6`}>
+        <div className='h-[313px] snap-y overflow-y-scroll overscroll-none -right-[17px]' onScroll={(e) => {
+            // console.log(e.currentTarget.scrollTop)
+            if (e.currentTarget.scrollTop >= 40) {
+                dispatch(update_price_from_idx({ direction: "down" }, "UPDATE_IDX_UP"))
+                console.log("scrollup")
+            } else if (e.currentTarget.scrollTop <= 4) {
+                dispatch(update_price_from_idx({ direction: "up" }, "UPDATE_IDX_DOWN"))
+                console.log("scrolldown")
+            }
+            // e.target.scrollTop = 24
+            e.target.scrollTo(0, 24)
+            // console.log(e)
+        }}>
+            <div className={`table ${boardColor} sticky top-0 pr-3`}>
                 {rows}
             </div>
         </div>

@@ -51,7 +51,7 @@ export const quoteSlice = createSlice({
       state.bid = action.payload.bid
     },
     update_position: (state, action) => {
-      if (action.payload.side === "BUY"){
+      if (action.payload.side === "BUY") {
         state.prices[action.payload.price].buyv += 1
       }
       if (action.payload.side == "SELL") {
@@ -61,6 +61,17 @@ export const quoteSlice = createSlice({
     update_display_num: (state, action) => {
       state.display_num = action.payload
     },
+    update_price_from_idx: (state, action) => {
+      if (action.payload.direction === "up") {
+        if (state.price_from_idx <= state.parr.length)
+          state.price_from_idx += 1
+      }
+      if (action.payload.direction === "down") {
+        if (state.price_from_idx >= state.display_num) {
+          state.price_from_idx -= 1
+        }
+      }
+    },
     init_price: (state, action) => {
       state.price = action.payload.price
       state.ask = action.payload.ask
@@ -68,10 +79,10 @@ export const quoteSlice = createSlice({
       state.parr = _.range(action.payload.limit_down, action.payload.limit_up, 1)
       if (action.payload.price_step_type === "tws") {
 
-        state.parr = prices_arr.slice(prices_arr.indexOf(action.payload.limit_down), prices_arr.indexOf(action.payload.limit_up))
+        state.parr = prices_arr.slice(prices_arr.indexOf(action.payload.limit_down), prices_arr.indexOf(action.payload.limit_up) + 1)
 
       }
-      state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num/2)
+      state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num / 2)
       // state.ask = {}
       state.parr.forEach(
         (p) => {
@@ -90,6 +101,6 @@ export const quoteSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { update_price, update_position, init_price, update_display_num } = quoteSlice.actions
+export const { update_price, update_position, init_price, update_display_num, update_price_from_idx } = quoteSlice.actions
 
 export default quoteSlice.reducer
