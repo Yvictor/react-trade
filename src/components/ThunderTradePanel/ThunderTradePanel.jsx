@@ -153,10 +153,10 @@ const ThunderTable = () => {
     return (
         <div className='h-[313px] snap-y overflow-y-scroll overscroll-none -right-[17px]' onScroll={(e) => {
             // console.log(e.currentTarget.scrollTop)
-            if (e.currentTarget.scrollTop >= 40) {
+            if (e.currentTarget.scrollTop >= 30) {
                 dispatch(update_price_from_idx({ direction: "down" }, "UPDATE_IDX_UP"))
                 console.log("scrollup")
-            } else if (e.currentTarget.scrollTop <= 4) {
+            } else if (e.currentTarget.scrollTop <= 14) {
                 dispatch(update_price_from_idx({ direction: "up" }, "UPDATE_IDX_DOWN"))
                 console.log("scrolldown")
             }
