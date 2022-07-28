@@ -8,7 +8,7 @@ import ThunderTradePanel from './components/ThunderTradePanel/ThunderTradePanel'
 
 function App() {
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen touch-none">
       <div className="h-full w-full">
         <div className='flex w-full h-16 bg-base-200 p-0 items-start'>
           <Navbar>

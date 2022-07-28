@@ -136,6 +136,7 @@ const ThunderTable = () => {
     const ask = useSelector((state) => state.quote.ask)
     const bid = useSelector((state) => state.quote.bid)
     const price = useSelector((state) => state.quote.price)
+    const [touchLastY, setTouchLastY] = useState(0)
     // console.log(prices)
     const boardColor = ""//themeBoardColor(theme)
     // border-b
@@ -164,6 +165,16 @@ const ThunderTable = () => {
             // e.target.scrollTop = 24
             // e.target.scrollTo(0, 24)
             // console.log(e)
+        }} onTouchMove={(e) => {
+            e.preventDefault()
+            const deltaY = e.changedTouches.item(0).clientY - touchLastY
+            if (deltaY > 2) {
+                dispatch(update_price_from_idx({ direction: "up" }, "UPDATE_IDX_DOWN"))
+            } else if (deltaY < -2) {
+                dispatch(update_price_from_idx({ direction: "down" }, "UPDATE_IDX_UP"))
+            }
+            console.log(deltaY)
+            setTouchLastY(e.changedTouches.item(0).clientY)
         }}>
             {rows}
         </div>
