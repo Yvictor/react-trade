@@ -35,20 +35,28 @@ export const quoteSlice = createSlice({
   },
   reducers: {
     update_price: (state, action) => {
-      state.price = action.payload.price
-      state.volume = action.payload.volume
-      action.payload.ask.forEach(
-        ({ p, v }) => {
-          state.prices[p].askv = v
-        }
-      )
-      action.payload.bid.forEach(
-        ({ p, v }) => {
-          state.prices[p].bidv = v
-        }
-      )
-      state.ask = action.payload.ask
-      state.bid = action.payload.bid
+      console.log(action.type)
+      console.log(action.payload.type)
+      if (action.payload.type === "bidask") {
+        // action.payload.ask.forEach(
+        //   ({ p, v }) => {
+        //     state.prices[p].askv = v
+        //   }
+        // )
+        // action.payload.bid.forEach(
+        //   ({ p, v }) => {
+        //     state.prices[p].bidv = v
+        //   }
+        // )
+        // console.log(action.payload.ask)
+        // console.log(action.payload.bid)
+        state.ask = action.payload.ask
+        state.bid = action.payload.bid
+      } else if (action.payload.type === "tick") {
+        state.price = action.payload.price
+        state.volume = action.payload.volume
+        // state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num / 2)
+      }
     },
     update_position: (state, action) => {
       if (action.payload.side === "BUY") {
@@ -100,7 +108,22 @@ export const quoteSlice = createSlice({
   },
 })
 
+export const solaceSlice = createSlice({
+  name: "SOL", initialState: {}, reducers: {
+    CONNECT: (state, action) => {
+      console.log(action)
+      console.log("solace_connect")
+    },
+    SUBSCRIBE: (state, action) => {
+    },
+    UNSUBSCRIBE: (state, action) => {
+    }
+  }
+}
+)
+
 // Action creators are generated for each case reducer function
 export const { update_price, update_position, init_price, update_display_num, update_price_from_idx } = quoteSlice.actions
+export const { CONNECT, SUBSCRIBE, UNSUBSCRIBE } = solaceSlice.actions
 
 export default quoteSlice.reducer

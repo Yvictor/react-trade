@@ -9,13 +9,29 @@ module.exports = {
   },
   daisyui: {
     styled: true,
-    themes: true,
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/colors/themes")["[data-theme=light]"],
+          secondary: "#f6f6f6fa",
+        },
+        
+      },
+      {
+        dark: {
+          ...require("daisyui/src/colors/themes")["[data-theme=dark]"],
+          secondary: "#3a4150",
+        },
+        
+      },
+    ],
     base: true,
     utils: true,
     logs: true,
     rtl: false,
     prefix: "",
     darkTheme: "dark",
+
   },
   plugins: [require("daisyui")],
 }

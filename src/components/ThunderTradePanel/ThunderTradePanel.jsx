@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import { Button, useTheme } from "react-daisyui"
+import { WindowMockup, useTheme } from "react-daisyui"
 import { useDispatch, useSelector } from 'react-redux'
-import { init_price, update_price, update_price_from_idx, update_position } from '../../redux/reducers'
+import { init_price, update_price, update_price_from_idx, update_position, CONNECT, SUBSCRIBE } from '../../redux/reducers'
 import { classnames } from 'tailwindcss-classnames';
-
+import { FiMinimize, FiSettings, FiMove, FiXOctagon, FiX, FiXCircle } from 'react-icons/fi'
 const themeBoardColor = (theme) => {
-    return theme === "dark" ? 'border-slate-500 outline-slate-500' : 'border-slate-300 outline-slate-300'
+    return theme === "dark" ? 'border-slate-700 outline-slate-700' : 'border-slate-100 outline-slate-100'
 }
 
 const cellbase = classnames(
@@ -35,7 +35,7 @@ const Cell = (props) => {
     const borderColor = themeBoardColor(theme)
     // const boardDashed = isPos ? "hover:outline hover:outline-dashed mt-px ml-px" : "outline mt-px ml-px"
     const border = `border ${isRight ? "" : "border-r-0"} ${isBottom ? "" : "border-b-0"}`
-    const borderStyle = isPos ? `${border} hover:border hover:border-dashed` : border
+    const borderStyle = isPos ? `${border} hover:bg-slate-100 hover:border-dash active:bg-slate-200 transition duration-0 active:duration-500` : border
     const hover = isPrice ? "hover:cursor-pointer" : ""
     const prices = useSelector((state) => state.quote.prices)
     const price_data = prices[price]
@@ -114,18 +114,29 @@ const ThunderTable = () => {
     const dispatch = useDispatch()
     useEffect(
         () => {
+            dispatch(CONNECT(), "SOL/CONNECT")
+            // dispatch(SUBSCRIBE({ exchange: "TSE", code: 2388 }), "SOL/SUBSCRIBE")
             dispatch(init_price({
                 price: 100, limit_down: 94.6, limit_up: 113, price_step_type: "tws",
                 ask: { 100: 10, 100.5: 30, 101: 33, 101.5: 45, 102: 31 },
                 bid: { 99.9: 5, 99.8: 45, 99.7: 17, 99.6: 23, 99.5: 11 },
             }, "INIT"))
+            // dispatch(init_price({
+            //     price: 14940, limit_down: 14000, limit_up: 15600, price_step_type: "tfe",
+            //     ask: {},
+            //     bid: {},
+            // }, "INIT"))
             while (rows.length > 0) {
                 rows.pop()
             }
             for (var i = 1; i <= display_num; i++) {
                 const p = parr[price_from_idx - i]
-                const v = (p in ask) ? ask[p] : (p in bid) ? bid[p] : 0
-                rows.push(<ThunderRow key={i} price={p} volume={v} isBid={p < price} isBottom={i === display_num}></ThunderRow>)
+                const inBid = p in bid
+                const inAsk = p in ask
+                const v = (inAsk) ? ask[p] : (inBid) ? bid[p] : 0
+                const isBid = inBid ? true : inAsk ? false : p < price
+                const display_p = p == price ? `${price}(${volume})` : `${p}`
+                rows.push(<ThunderRow key={i} price={display_p} volume={v} isBid={isBid} isBottom={i === display_num}></ThunderRow>)
             }
         }, []
     )
@@ -136,6 +147,7 @@ const ThunderTable = () => {
     const ask = useSelector((state) => state.quote.ask)
     const bid = useSelector((state) => state.quote.bid)
     const price = useSelector((state) => state.quote.price)
+    const volume = useSelector((state) => state.quote.volume)
     const [touchLastY, setTouchLastY] = useState(0)
     // console.log(prices)
     const boardColor = ""//themeBoardColor(theme)
@@ -143,8 +155,13 @@ const ThunderTable = () => {
     const rows = []
     for (var i = 1; i <= display_num; i++) {
         const p = parr[price_from_idx - i]
-        const v = (p in ask) ? ask[p] : (p in bid) ? bid[p] : 0
-        rows.push(<ThunderRow key={i} price={p} volume={v} isBid={p < price} isBottom={i === display_num}
+        const inBid = p in bid
+        const inAsk = p in ask
+        const v = (inAsk) ? ask[p] : (inBid) ? bid[p] : 0
+        const isBid = inBid ? true : inAsk ? false : p < price
+        const display_p = p == price ? `${price} (${volume})` : `${p}`
+        // console.log(display_p)
+        rows.push(<ThunderRow key={i} price={display_p} volume={v} isBid={isBid} isBottom={i === display_num}
         // onClick={(e) => {
         //     dispatch(update_position({price: p, side: p < price? "BUY": "SELL"}))
         // }}
@@ -152,7 +169,7 @@ const ThunderTable = () => {
     }
 
     return (
-        <div className={`table ${boardColor} sticky top-0 pr-3`} onWheel={(e) => {
+        <div className={`table ${boardColor} sticky top-0`} onWheel={(e) => {
             // console.log(e.currentTarget.scrollTop)
             // console.log(e.deltaY)
             if (e.deltaY > 2) {
@@ -183,7 +200,21 @@ const ThunderTable = () => {
 
 const ThunderTradePanel = () => {
     return (
-        <ThunderTable></ThunderTable>
+        <div className='m-3'>
+        <div className='bg-base-100 border border-base-300 rounded-xl'>
+            <div className='m-3 flex flex-row-reverse'>
+                <FiXCircle className='m-1 hover:stroke-base-300'/>
+                <FiSettings className='m-1 hover:stroke-base-300'/>
+                <FiMove className='m-1 rotate-45 hover:stroke-base-300'/>
+                
+            </div>
+            <div className='bg-base-100 m-3'>
+                <ThunderTable></ThunderTable>
+            </div>
+
+        </div>
+        </div>
+
     )
 }
 
