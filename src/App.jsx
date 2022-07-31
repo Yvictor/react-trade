@@ -4,12 +4,8 @@ import './App.css'
 import { Button, Navbar } from 'react-daisyui'
 import ThemeButton from './theme'
 import ThunderTradePanel from './components/ThunderTradePanel/ThunderTradePanel'
-import { useDispatch } from 'react-redux'
-import { SUBSCRIBE, UNSUBSCRIBE } from './redux/reducers'
-import { FiZap, FiZapOff } from 'react-icons/fi'
 
 function App() {
-  const dispatch = useDispatch();
   return (
     <div className="w-screen h-screen touch-none">
       <div className="h-full w-full bg-secondary">
@@ -25,12 +21,6 @@ function App() {
         </div>
         <div className='flex'>
           <ThunderTradePanel></ThunderTradePanel>
-          <Button color="ghost" onClick={(e)=>{
-            dispatch(SUBSCRIBE({}), "SUB")
-          }}><FiZap>subscribe</FiZap></Button>
-          <Button color='ghost' onClick={(e)=>{
-            dispatch(UNSUBSCRIBE({}), "UNSUB")
-          }}><FiZapOff>unsubscribe</FiZapOff></Button>
         </div>
       </div>
     </div>

@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import { WindowMockup, useTheme } from "react-daisyui"
+import { Button, useTheme } from "react-daisyui"
 import { useDispatch, useSelector } from 'react-redux'
-import { init_price, update_price, update_price_from_idx, update_position, CONNECT, SUBSCRIBE } from '../../redux/reducers'
+import { init_price, update_price, update_price_from_idx, update_position, CONNECT, SUBSCRIBE, UNSUBSCRIBE } from '../../redux/reducers'
 import { classnames } from 'tailwindcss-classnames';
-import { FiMinimize, FiSettings, FiMove, FiXOctagon, FiX, FiXCircle } from 'react-icons/fi'
+import { FiMinimize, FiSettings, FiMove, FiXOctagon, FiX, FiXCircle, FiZap, FiZapOff } from 'react-icons/fi'
+
 const themeBoardColor = (theme) => {
     return theme === "dark" ? 'border-slate-700 outline-slate-700' : 'border-slate-100 outline-slate-100'
 }
@@ -29,7 +30,7 @@ const Cell = (props) => {
     } = props
     const dispatch = useDispatch()
     const hidden = isBid ? "" : "hidden"
-    const color = isBid ? "text-red-500" : "text-green-500"
+    const color = isBid ? "text-rose-400" : "text-emerald-400"
     const bgColor = ""//isBid ? "bg-red-100": "bg-green-100"
     const { theme } = useTheme()
     const borderColor = themeBoardColor(theme)
@@ -199,20 +200,29 @@ const ThunderTable = () => {
 }
 
 const ThunderTradePanel = () => {
+    const dispatch = useDispatch();
     return (
         <div className='m-3'>
-        <div className='bg-base-100 border border-base-300 rounded-xl'>
-            <div className='m-3 flex flex-row-reverse'>
-                <FiXCircle className='m-1 hover:stroke-base-300'/>
-                <FiSettings className='m-1 hover:stroke-base-300'/>
-                <FiMove className='m-1 rotate-45 hover:stroke-base-300'/>
-                
-            </div>
-            <div className='bg-base-100 m-3'>
-                <ThunderTable></ThunderTable>
-            </div>
+            <div className='bg-base-100 border border-base-300 rounded-xl'>
+                <div className='m-3 flex flex-row-reverse'>
+                    <FiXCircle className='m-1 hover:stroke-base-300' />
+                    <FiSettings className='m-1 hover:stroke-base-300' />
+                    <FiMove className='m-1 rotate-45 hover:stroke-base-300' />
 
-        </div>
+                </div>
+                <div className='bg-base-100 m-3'>
+                    <ThunderTable></ThunderTable>
+                </div>
+                <div className='flex justify-center'>
+
+                    <Button color="ghost" onClick={(e) => {
+                        dispatch(SUBSCRIBE({}), "SUB")
+                    }}><FiZap>subscribe</FiZap></Button>
+                    <Button color='ghost' onClick={(e) => {
+                        dispatch(UNSUBSCRIBE({}), "UNSUB")
+                    }}><FiZapOff>unsubscribe</FiZapOff></Button>
+                </div>
+            </div>
         </div>
 
     )
