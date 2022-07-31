@@ -6,22 +6,22 @@
 // })
 
 // export default thunderTradeAppReducer
-import _, { round } from 'lodash'
+import _, { round } from "lodash";
 
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 const prices_arr = [
-  ..._.range(0.01, 10, 0.01).map(x => _.round(x, 2)),
-  ..._.range(10, 50, 0.05).map(x => _.round(x, 2)),
-  ..._.range(50, 100, 0.1).map(x => _.round(x, 1)),
-  ..._.range(100, 500, 0.5).map(x => _.round(x, 1)),
-  ..._.range(500, 1000, 1).map(x => _.round(x, 0)),
+  ..._.range(0.01, 10, 0.01).map((x) => _.round(x, 2)),
+  ..._.range(10, 50, 0.05).map((x) => _.round(x, 2)),
+  ..._.range(50, 100, 0.1).map((x) => _.round(x, 1)),
+  ..._.range(100, 500, 0.5).map((x) => _.round(x, 1)),
+  ..._.range(500, 1000, 1).map((x) => _.round(x, 0)),
   ..._.range(1000, 10000, 5),
-]
-console.log(prices_arr)
+];
+console.log(prices_arr);
 
 export const quoteSlice = createSlice({
-  name: 'quote',
+  name: "quote",
   initialState: {
     prices: {},
     ask: {},
@@ -35,8 +35,8 @@ export const quoteSlice = createSlice({
   },
   reducers: {
     update_price: (state, action) => {
-      console.log(action.type)
-      console.log(action.payload.type)
+      console.log(action.type);
+      console.log(action.payload.type);
       if (action.payload.type === "bidask") {
         // action.payload.ask.forEach(
         //   ({ p, v }) => {
@@ -50,80 +50,88 @@ export const quoteSlice = createSlice({
         // )
         // console.log(action.payload.ask)
         // console.log(action.payload.bid)
-        state.ask = action.payload.ask
-        state.bid = action.payload.bid
+        state.ask = action.payload.ask;
+        state.bid = action.payload.bid;
       } else if (action.payload.type === "tick") {
-        state.price = action.payload.price
-        state.volume = action.payload.volume
+        state.price = action.payload.price;
+        state.volume = action.payload.volume;
         // state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num / 2)
       }
     },
     update_position: (state, action) => {
       if (action.payload.side === "BUY") {
-        state.prices[action.payload.price].buyv += 1
+        state.prices[action.payload.price].buyv += 1;
       }
       if (action.payload.side == "SELL") {
-        state.prices[action.payload.price].sellv += 1
+        state.prices[action.payload.price].sellv += 1;
       }
     },
     update_display_num: (state, action) => {
-      state.display_num = action.payload
+      state.display_num = action.payload;
     },
     update_price_from_idx: (state, action) => {
       if (action.payload.direction === "up") {
-        if (state.price_from_idx < state.parr.length)
-          state.price_from_idx += 1
+        if (state.price_from_idx < state.parr.length) state.price_from_idx += 1;
       }
       if (action.payload.direction === "down") {
         if (state.price_from_idx > state.display_num) {
-          state.price_from_idx -= 1
+          state.price_from_idx -= 1;
         }
       }
     },
     init_price: (state, action) => {
-      state.price = action.payload.price
-      state.ask = action.payload.ask
-      state.bid = action.payload.bid
-      state.parr = _.range(action.payload.limit_down, action.payload.limit_up, 1)
+      state.price = action.payload.price;
+      state.ask = action.payload.ask;
+      state.bid = action.payload.bid;
+      state.parr = _.range(
+        action.payload.limit_down,
+        action.payload.limit_up,
+        1
+      );
       if (action.payload.price_step_type === "tws") {
-
-        state.parr = prices_arr.slice(prices_arr.indexOf(action.payload.limit_down), prices_arr.indexOf(action.payload.limit_up) + 1)
-
+        state.parr = prices_arr.slice(
+          prices_arr.indexOf(action.payload.limit_down),
+          prices_arr.indexOf(action.payload.limit_up) + 1
+        );
       }
-      state.price_from_idx = state.parr.indexOf(state.price) + _.round(state.display_num / 2)
+      state.price_from_idx =
+        state.parr.indexOf(state.price) + _.round(state.display_num / 2);
       // state.ask = {}
-      state.parr.forEach(
-        (p) => {
-          state.prices[p] = {
-            askv: 0,
-            bidv: 0,
-            buyv: 0,
-            sellv: 0,
-          }
-        }
-      )
+      state.parr.forEach((p) => {
+        state.prices[p] = {
+          askv: 0,
+          bidv: 0,
+          buyv: 0,
+          sellv: 0,
+        };
+      });
       // console.log(parr)
       // console.log(state.prices)
-    }
+    },
   },
-})
+});
 
 export const solaceSlice = createSlice({
-  name: "SOL", initialState: {}, reducers: {
+  name: "SOL",
+  initialState: {},
+  reducers: {
     CONNECT: (state, action) => {
-      console.log(action)
-      console.log("solace_connect")
+      console.log(action);
+      console.log("solace_connect");
     },
-    SUBSCRIBE: (state, action) => {
-    },
-    UNSUBSCRIBE: (state, action) => {
-    }
-  }
-}
-)
+    SUBSCRIBE: (state, action) => {},
+    UNSUBSCRIBE: (state, action) => {},
+  },
+});
 
 // Action creators are generated for each case reducer function
-export const { update_price, update_position, init_price, update_display_num, update_price_from_idx } = quoteSlice.actions
-export const { CONNECT, SUBSCRIBE, UNSUBSCRIBE } = solaceSlice.actions
+export const {
+  update_price,
+  update_position,
+  init_price,
+  update_display_num,
+  update_price_from_idx,
+} = quoteSlice.actions;
+export const { CONNECT, SUBSCRIBE, UNSUBSCRIBE } = solaceSlice.actions;
 
-export default quoteSlice.reducer
+export default quoteSlice.reducer;

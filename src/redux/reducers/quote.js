@@ -1,16 +1,16 @@
 const initState = {
-    prices: [],
-    asks: [],
-    bids: [],
-}
+  prices: [],
+  asks: [],
+  bids: [],
+};
 
 const quoteReducer = (state = initState, action) => {
-    switch (action.type) {
-        case "UPDATE_QUOTE":
-            return {
-                quote: action.quote
-            }
-    }
-}
+  switch (action.type) {
+    case "UPDATE_QUOTE":
+      return {
+        quote: action.quote,
+      };
+  }
+};
 
-export default quoteReducer
+export default quoteReducer;
