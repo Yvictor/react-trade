@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { Button, useTheme } from "react-daisyui";
+import { Button, Input, useTheme } from "react-daisyui";
 import { useDispatch, useSelector } from "react-redux";
 import {
   init_price,
@@ -304,10 +304,16 @@ const ThunderTradePanel = () => {
   return (
     <div className="m-3">
       <div className="bg-base-100 border border-base-300 rounded-xl">
-        <div className="m-3 flex flex-row-reverse">
-          <FiXCircle className="m-1 hover:stroke-base-300" />
-          <FiSettings className="m-1 hover:stroke-base-300" />
-          <FiMove className="m-1 rotate-45 hover:stroke-base-300" />
+        <div className="m-3 grid grid-cols-4">
+          <div className="flex col-span-3">
+            <span>ThunderTrade</span>
+            <Input size="xs" bordered={false} placeholder="TSE/2498" className="ml-1 w-24 border-none" color="secondary"></Input>        
+          </div>
+          <div className="flex justify-end content-center">
+            <FiMove className="m-1 rotate-45 hover:stroke-base-300" />
+            <FiSettings className="m-1 hover:stroke-base-300" />
+            <FiXCircle className="m-1 hover:stroke-base-300" />
+          </div>
         </div>
         <div className="bg-base-100 m-3">
           <ThunderTable></ThunderTable>
