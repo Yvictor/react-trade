@@ -302,12 +302,18 @@ const ThunderTable = () => {
 const ThunderTradePanel = () => {
   const dispatch = useDispatch();
   return (
-    <div className="m-3">
+    <div>
       <div className="bg-base-100 border border-base-300 rounded-xl">
         <div className="m-3 grid grid-cols-4">
           <div className="flex col-span-3">
             <span>ThunderTrade</span>
-            <Input size="xs" bordered={false} placeholder="TSE/2498" className="ml-1 w-24 border-none" color="secondary"></Input>        
+            <Input
+              size="xs"
+              bordered={false}
+              placeholder="TSE/2498"
+              className="ml-1 w-24 border-none"
+              color="secondary"
+            ></Input>
           </div>
           <div className="flex justify-end content-center">
             <FiMove className="m-1 rotate-45 hover:stroke-base-300" />
@@ -315,7 +321,7 @@ const ThunderTradePanel = () => {
             <FiXCircle className="m-1 hover:stroke-base-300" />
           </div>
         </div>
-        <div className="bg-base-100 m-3">
+        <div className="bg-base-100 flex justify-center">
           <ThunderTable></ThunderTable>
         </div>
         <div className="flex justify-center">

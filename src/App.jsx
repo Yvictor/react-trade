@@ -4,8 +4,16 @@ import "./App.css";
 import { Button, Navbar } from "react-daisyui";
 import ThemeButton from "./theme";
 import ThunderTradePanel from "./components/ThunderTradePanel/ThunderTradePanel";
+import ResponsiveReactGridLayout from "react-grid-layout";
+import "/node_modules/react-grid-layout/css/styles.css";
+import "/node_modules/react-resizable/css/styles.css";
 
 function App() {
+  const layout = [
+    { i: "a", x: 0, y: 0, w: 3, h: 3, minW: 3},
+    { i: "b", x: 3, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
+    { i: "c", x: 3, y: 0, w: 3, h: 1},
+  ];
   return (
     <div className="w-screen h-screen touch-none">
       <div className="h-full w-full bg-secondary">
@@ -19,9 +27,22 @@ function App() {
             </div>
           </Navbar>
         </div>
-        <div className="flex">
-          <ThunderTradePanel></ThunderTradePanel>
-        </div>
+        <div></div>
+
+        <ResponsiveReactGridLayout
+          className="layout"
+          layout={layout}
+          cols={12}
+          width={window.innerWidth}
+          rowHeight={146}
+          isDraggable={true}
+          isResizable={true}
+        >
+          <div key="a"><ThunderTradePanel/></div>
+          <div key="b" className="border">b</div>
+          <div key="c" className="border">c</div>
+          {/* <ThunderTradePanel key="a"></ThunderTradePanel> */}
+        </ResponsiveReactGridLayout>
       </div>
     </div>
   );
