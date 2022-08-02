@@ -10,7 +10,7 @@ import "/node_modules/react-resizable/css/styles.css";
 
 function App() {
   const layout = [
-    { i: "a", x: 0, y: 0, w: 3, h: 3, minW: 3},
+    { i: "a", x: 0, y: 0, w: 3, h: 15, minW: 3, },
     { i: "b", x: 3, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
     { i: "c", x: 3, y: 0, w: 3, h: 1},
   ];
@@ -34,9 +34,10 @@ function App() {
           layout={layout}
           cols={12}
           width={window.innerWidth}
-          rowHeight={146}
-          isDraggable={true}
-          isResizable={true}
+          rowHeight={22}
+          draggableHandle=".icon-move"
+          resizeHandles={["s", "se"]}
+          onLayoutChange={(e)=>{console.log(e)}}
         >
           <div key="a"><ThunderTradePanel/></div>
           <div key="b" className="border">b</div>

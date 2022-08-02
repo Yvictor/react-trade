@@ -4,24 +4,28 @@ import { Button, Input, useTheme } from "react-daisyui";
 import { useDispatch, useSelector } from "react-redux";
 import {
   init_price,
+  update_symbol,
   update_price,
   update_price_from_idx,
   update_position,
   CONNECT,
   SUBSCRIBE,
   UNSUBSCRIBE,
+  REQUEST,
+  DOWNLOAD_CONTRACTS,
 } from "../../redux/reducers";
 import { classnames } from "tailwindcss-classnames";
 import {
   FiMinimize,
   FiSettings,
   FiMove,
-  FiXOctagon,
-  FiX,
+  FiPlay,
   FiXCircle,
   FiZap,
   FiZapOff,
+  FiDownloadCloud,
 } from "react-icons/fi";
+import Autosuggest from "react-autosuggest";
 
 const themeBoardColor = (theme) => {
   return theme === "dark"
@@ -183,15 +187,28 @@ const ThunderTable = () => {
   useEffect(() => {
     dispatch(CONNECT(), "SOL/CONNECT");
     // dispatch(SUBSCRIBE({ exchange: "TSE", code: 2388 }), "SOL/SUBSCRIBE")
+    // dispatch(
+    //   init_price(
+    //     {
+    //       price: 100,
+    //       limit_down: 94.6,
+    //       limit_up: 113,
+    //       price_step_type: "tws",
+    //       ask: { 100: 10, 100.5: 30, 101: 33, 101.5: 45, 102: 31 },
+    //       bid: { 99.9: 5, 99.8: 45, 99.7: 17, 99.6: 23, 99.5: 11 },
+    //     },
+    //     "INIT"
+    //   )
+    // );
     dispatch(
       init_price(
         {
-          price: 100,
-          limit_down: 94.6,
-          limit_up: 113,
+          price: 31.8,
+          limit_down: 26.55,
+          limit_up: 32.35,
           price_step_type: "tws",
-          ask: { 100: 10, 100.5: 30, 101: 33, 101.5: 45, 102: 31 },
-          bid: { 99.9: 5, 99.8: 45, 99.7: 17, 99.6: 23, 99.5: 11 },
+          ask: {},
+          bid: {},
         },
         "INIT"
       )
@@ -299,24 +316,102 @@ const ThunderTable = () => {
   );
 };
 
+const escapeRegexCharacters = (str) =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const SymbolAutoSuggest = () => {
+  const symbol = useSelector((state) => state.quote.symbol);
+  const contracts = useSelector((state) => state.contracts);
+  const contract = useSelector((state) => state.contracts[symbol]);
+  const dispatch = useDispatch();
+
+  const [value, setValue] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  const getSuggestions = (value) => {
+    return Object.keys(contracts).filter((contract) =>
+      contract.includes(value)
+    );
+  };
+
+  const inputProps = {
+    placeholder: symbol,
+    value,
+    onChange: (event, { newValue }) => {
+      setValue(newValue);
+    },
+  };
+
+  return (
+    <Autosuggest
+      suggestions={suggestions}
+      onSuggestionsFetchRequested={({ value }) => {
+        setSuggestions(getSuggestions(value));
+      }}
+      onSuggestionsClearRequested={() => {
+        setSuggestions([]);
+      }}
+      getSuggestionValue={(suggestion) => suggestion}
+      renderSuggestion={(suggestion) => <span>{suggestion}</span>}
+      inputProps={inputProps}
+      onSuggestionSelected={(e, value) => {
+        dispatch(update_symbol({ symbol: value.suggestion }));
+        if (contract !== undefined) {
+          dispatch(
+            init_price({
+              price: contract.reference,
+              limit_down: contract.limit_down,
+              limit_up: contract.limit_up,
+              price_step_type: contract.security_type,
+              ask: {},
+              bid: {},
+            })
+          );
+        }
+      }}
+    />
+  );
+};
+
 const ThunderTradePanel = () => {
   const dispatch = useDispatch();
+  const symbol = useSelector((state) => state.quote.symbol);
+  const contract = useSelector((state) => state.contracts[symbol]);
+  // console.log(contract);
   return (
     <div>
       <div className="bg-base-100 border border-base-300 rounded-xl">
         <div className="m-3 grid grid-cols-4">
           <div className="flex col-span-3">
             <span>ThunderTrade</span>
-            <Input
+            <SymbolAutoSuggest></SymbolAutoSuggest>
+            {/* <Input
               size="xs"
               bordered={false}
-              placeholder="TSE/2498"
-              className="ml-1 w-24 border-none"
+              placeholder={symbol}
+              className="ml-1 w-26 border-none"
               color="secondary"
-            ></Input>
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  dispatch(update_symbol({ symbol: e.target.value }));
+                  if (contract !== undefined) {
+                    dispatch(
+                      init_price({
+                        price: contract.reference,
+                        limit_down: contract.limit_down,
+                        limit_up: contract.limit_up,
+                        price_step_type: contract.security_type,
+                        ask: {},
+                        bid: {},
+                      })
+                    );
+                  }
+                }
+              }}
+            ></Input> */}
           </div>
           <div className="flex justify-end content-center">
-            <FiMove className="m-1 rotate-45 hover:stroke-base-300" />
+            <FiMove className="m-1 rotate-45 hover:stroke-base-300 icon-move" />
             <FiSettings className="m-1 hover:stroke-base-300" />
             <FiXCircle className="m-1 hover:stroke-base-300" />
           </div>
@@ -328,7 +423,7 @@ const ThunderTradePanel = () => {
           <Button
             color="ghost"
             onClick={(e) => {
-              dispatch(SUBSCRIBE({}), "SUB");
+              dispatch(SUBSCRIBE({ symbol: symbol }), "SUB");
             }}
           >
             <FiZap>subscribe</FiZap>
@@ -336,10 +431,38 @@ const ThunderTradePanel = () => {
           <Button
             color="ghost"
             onClick={(e) => {
-              dispatch(UNSUBSCRIBE({}), "UNSUB");
+              dispatch(UNSUBSCRIBE({ symbol: symbol }), "UNSUB");
             }}
           >
             <FiZapOff>unsubscribe</FiZapOff>
+          </Button>
+          <Button
+            color="ghost"
+            onClick={(e) => {
+              dispatch(
+                REQUEST({
+                  topic: "api/v1/data/snapshots",
+                  body: {
+                    contracts: [
+                      { security_type: "STK", exchange: "TSE", code: "1568" },
+                    ],
+                    token:
+                      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE2NTkzMzk4ODksImV4cCI6MTY1OTQyNjI4OSwic2ltdWxhdGlvbiI6ZmFsc2UsInBlcnNvbl9pZCI6IlAxMjQwODEwNDYiLCJ2ZXJzaW9uIjoiMC4zLjYuZGV2MiIsInAycCI6IiNQMlAvdjppZGNzb2xhY2UwMS9Pcnlma3FxbS9QWUFQSS9QMTI0MDgxMDQ2LzA4MDEvMDc0NDQ5LzAyMjA1MS8xMjguMTEwLjIzLjkxLyMifQ.udv7gTHU2PfPGeylzBpd4SMMU9q_XhHsTpoQLGhlwEU",
+                  },
+                }),
+                "UNSUB"
+              );
+            }}
+          >
+            <FiDownloadCloud>request</FiDownloadCloud>
+          </Button>
+          <Button
+            color="ghost"
+            onClick={(e) => {
+              dispatch(DOWNLOAD_CONTRACTS({}), "UNSUB");
+            }}
+          >
+            <FiPlay>request</FiPlay>
           </Button>
         </div>
       </div>
